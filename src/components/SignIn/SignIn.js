@@ -6,13 +6,13 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-// import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import Modal from '../Modal/Modal';
 
 function Copyright() {
   return (
@@ -46,8 +46,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn() {
+export default function SignIn({ onChangeUsername, 
+                                onChangePassword, 
+                                onBlurUsername, 
+                                onBlurPassword, 
+                                uNError, 
+                                pWError, 
+                                uNHelpText, 
+                                pWHelpText, 
+                                handleSignIn,
+                                isLoading
+                              }) {
+
   const classes = useStyles();
+
+  
 
   return (
     <Container component="main" maxWidth="xs">
@@ -70,6 +83,10 @@ export default function SignIn() {
             name="username"
             autoComplete="username"
             autoFocus
+            onBlur={() => onBlurUsername()}
+            onChange={(e) => onChangeUsername(e.target.value)}
+            helperText={uNHelpText}
+            error={uNError}
           />
           <TextField
             variant="outlined"
@@ -81,18 +98,24 @@ export default function SignIn() {
             type="password"
             id="password"
             autoComplete="current-password"
+            onBlur={() => onBlurPassword()}
+            onChange={(e) => onChangePassword(e.target.value)}
+            helperText={pWHelpText}
+            error={pWError}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
           <Button
-            type="submit"
+            type="button"
             fullWidth
             variant="contained"
             className={classes.submit}
+            onClick={handleSignIn}
+            disabled={isLoading}
           >
-            Sign In
+            {isLoading ? <div className="loader"></div> : "Sign In"}
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
@@ -106,6 +129,7 @@ export default function SignIn() {
       <Box mt={8}>
         <Copyright />
       </Box>
+      <Modal />
     </Container>
   );
 }

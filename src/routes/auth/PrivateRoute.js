@@ -3,13 +3,16 @@ import { Route, Redirect } from 'react-router-dom';
 
 
 export default function PrivateRoute({ children, ...rest }) {
+   let isAuthorized = localStorage.getItem("token") ? true : false;
+
+
    
    return (
       <React.Fragment>
          <Route
             {...rest}
             render={({ location }) =>
-               (false) ? (
+               (isAuthorized) ? (
                   children
                ) : (
                      <Redirect

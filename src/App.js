@@ -10,13 +10,14 @@ import PrivateRoute from './routes/auth/PrivateRoute';
 import DashboardRoute from './routes/dashboard/DashboardRoute';
 
 
+
 function App() {
   return (
     <Router basename={process.env.PUBLIC_URL} >
       <Switch>
         <Route path='/login' children={<LoginRoute />} />
         <Route path='/register' children={<RegisterRoute />} />
-        <PrivateRoute exact path="/" >
+        <PrivateRoute path="/" >
           <DashboardRoute />
         </PrivateRoute>
       </Switch>

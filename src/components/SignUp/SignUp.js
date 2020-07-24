@@ -1,11 +1,11 @@
-import React, {useState, useRef, useCallback} from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
+// import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -52,117 +52,25 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function SignUp({REGISTER_URL}) {
+export default function SignUp({ 
+  userTypes, 
+  onChangeUsername,
+  onChangePassword,
+  onChangeConfirmPw,
+  onChangeUserType,
+  onBlurUsername,
+  onBlurPassword,
+  onBlurConfirmPw,
+  userError,
+  passWError,
+  confirmPwError,
+  userHelpText,
+  passwordHelpText,
+  confirmPwHelpText,
+  handleSignUp,
+  onFocusPw
+  }) {
   const classes = useStyles();
-
-  const [userValid, setUserValid] = useState(false);
-  const [passWValid, setPassWValid] = useState(false);
-  const [confirmPwValid, setConfirmPwValid] = useState(false);
-  const userTypes = [
-    { id: 1, label: "Personal" },
-    { id: 2, label: "Partner" }
-  ];
-  const [username, setUsername] = useState("");
-  const [userType, setUserType] = useState("Personal");
-  const [password, setPassword] = useState("");
-  const [confirmPw, setConfirmPw] = useState("");
-
-  const onChangeUsername = useCallback((e) => {setUsername(e.target.value.trim())},[]);
-  const onChangeUserType = useCallback((e) => {setUserType(e.target.value.trim())},[]);
-  const onChangePassword = useCallback((e) => {setPassword(e.target.value.trim())},[]);
-  const onChangeConfirmPw = useCallback((e) => {setConfirmPw(e.target.value.trim())},[]);
-
-  const errorMsgs = [
-    "Username be at least 4 characters", 
-    "Field cannot be left blank", 
-    "Password must be at least 8 characters", 
-    "Passwords don't match"
-  ];
-  const [userHelpText, setUserHelpText] = useState(""); 
-  const [passwordHelpText, setPasswordHelpText] = useState(""); 
-  const [confirmPwHelpText, setConfirmPwHelpText] = useState(""); 
-
-  const onBlurUsername = useCallback((e) => {
-    if (e.target.value === "") {
-      setUserValid(true);
-      setUserHelpText(errorMsgs[1]);
-    } else if (username.length < 4) {
-        setUserValid(true);
-        setUserHelpText(errorMsgs[0]);
-    } else {
-      setUserValid(false);
-      setUserHelpText("");
-    } 
-  },[errorMsgs, username])
-
-  const onBlurPassword = useCallback((e) => {
-    if (e.target.value === "") {
-      setPassWValid(true);
-      setPasswordHelpText(errorMsgs[1]);
-    } else if (password.length < 8) {
-      setPassWValid(true);
-      setPasswordHelpText(errorMsgs[2]);
-    } else if (confirmPw !== "" && password !== confirmPw) {
-      setPassWValid(true);
-      setConfirmPwValid(true);
-      setPasswordHelpText(errorMsgs[3]);
-      setConfirmPwHelpText(errorMsgs[3]);
-    } else {
-      setPassWValid(false);
-      setConfirmPwValid(false);
-      setPasswordHelpText("");
-    }
-  },[errorMsgs, password, confirmPw])
-
-  const onBlurConfirmPw = useCallback((e) => {
-    if (confirmPw !== password) {
-      setConfirmPwValid(true);
-      setPassWValid(true);
-      setConfirmPwHelpText(errorMsgs[3]);
-      setPasswordHelpText(errorMsgs[3]);
-    } else if (confirmPw === "") {
-      setConfirmPwValid(true);
-      setConfirmPwHelpText(errorMsgs[1]);
-    } else {
-      setConfirmPwValid(false);
-      setPassWValid(false);
-      setConfirmPwHelpText("");
-    }
-  }, [errorMsgs, confirmPw, password])
-
-  const onFocusPw = (e) => {
-    if (passWValid && confirmPwValid) {
-      setPasswordHelpText("");
-      setConfirmPwHelpText("");
-    }
-  };
-
-  const fetchRegister = async () => {
-    let user = {username: username, password: password};
-    let URL = REGISTER_URL + userType;
-    let response = await fetch(URL, {
-      method: 'post',
-      headers: {
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify(user)
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    } else return await response.json()
-  }
-
-
-  const handleSignUp = () => {
-    fetchRegister()
-    .then(data => {
-      alert("Success");
-      console.log(data);
-    })
-    .catch(e => console.log(e))
-  }
-
-
 
 
   return (
@@ -187,10 +95,9 @@ export default function SignUp({REGISTER_URL}) {
                 id="username"
                 label="Username"
                 autoFocus
-                error={userValid}
-                onBlur={onBlurUsername}
-                onChange={onChangeUsername}
-                value={username}
+                error={userError}
+                onBlur={() => onBlurUsername()}
+                onChange={(e) => onChangeUsername(e.target.value.trim())}
                 helperText={userHelpText}
               />
             </Grid>
@@ -202,8 +109,7 @@ export default function SignUp({REGISTER_URL}) {
                 id="userType"
                 label="Account Type"
                 autoComplete="userType"
-                onChange={onChangeUserType}
-                value={userType}
+                onChange={(e) => onChangeUserType(e.target.value)}
                 SelectProps={{
                   native: true,
                 }}
@@ -226,12 +132,11 @@ export default function SignUp({REGISTER_URL}) {
                 type="password"
                 id="password"
                 autoComplete="current-password"
-                error={passWValid}
-                onBlur={onBlurPassword}
-                onChange={onChangePassword}
-                value={password}
+                error={passWError}
+                onBlur={() => onBlurPassword()}
+                onChange={(e) => onChangePassword(e.target.value.trim())}
                 helperText={passwordHelpText}
-                onFocus={onFocusPw}
+                onFocus={() => onFocusPw()}
               />
             </Grid>
             <Grid item xs={12}>
@@ -244,18 +149,11 @@ export default function SignUp({REGISTER_URL}) {
                 type="password"
                 name="confirm-password"
                 autoComplete="current-password"
-                error={confirmPwValid}
-                onBlur={onBlurConfirmPw}
-                onChange={onChangeConfirmPw}
-                value={confirmPw}
+                error={confirmPwError}
+                onBlur={() => onBlurConfirmPw()}
+                onChange={(e) => onChangeConfirmPw(e.target.value.trim())}
                 helperText={confirmPwHelpText}
-                onFocus={onFocusPw}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
+                onFocus={() => onFocusPw()}
               />
             </Grid>
           </Grid>

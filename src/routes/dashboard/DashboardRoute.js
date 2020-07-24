@@ -1,13 +1,13 @@
 import React from 'react';
+import { Route } from 'react-router-dom';
+import Dashboard from '../../components/Dashboard/Dashboard';
 
 
 export default function DashboardRoute() {
 
    return (
-      <div>
-         <h1>
-            Dashboard Route
-         </h1>
-      </div>
+      <Route path="/" >
+         <Dashboard />
+      </Route>
    )
 }
