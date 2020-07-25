@@ -32,10 +32,22 @@ export default function NewRequestRoute({setRequests}) {
    },[]) 
 
 
+   let [errors, setErrors] = useState({
+      service: false,
+      date: false,
+      address: false
+   })
 
 
    const submitRequest = async () => {
       setLoader(true);
+      if (service === "" || date === "" || address === "" || typeof date !== 'number' || typeof address !== 'string') {
+         if (address === "") {
+            setErrors({...errors, address: true})
+         }
+         setLoader(false);
+         return;
+      }
       let newRequest = {service: service[0], appointmentDate: date, appointmentLocation: address};
       const URL = `https://young-anchorage-59812.herokuapp.com/auth/users/${user.userId}`;
       let response;
@@ -68,6 +80,7 @@ export default function NewRequestRoute({setRequests}) {
       }
    }
 
+
    return (
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
          <Route render={() => {
@@ -80,6 +93,8 @@ export default function NewRequestRoute({setRequests}) {
                      address={address}
                      handleAddressChange={handleAddressChange}
                      handleSubmit={submitRequest}
+                     error={errors}
+                     setError={setErrors}
                   />
                )
             } else return <div className="page-loader" ></div>

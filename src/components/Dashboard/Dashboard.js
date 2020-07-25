@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -98,10 +98,10 @@ const useStyles = makeStyles((theme) => ({
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
-    marginLeft: theme.spacing(7),
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(9),
-    },
+    // marginLeft: theme.spacing(7),
+    // [theme.breakpoints.up('sm')]: {
+    //   marginLeft: theme.spacing(9),
+    // },
     flexGrow: 1,
     height: '100vh',
     overflow: 'auto',
@@ -123,21 +123,30 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
+  const [isOpen, setIsOpen] = React.useState(false);
+  // const handleDrawerOpen = () => {
+  //   setOpen(true);
+  // };
+  // const handleDrawerClose = () => {
+  //   setOpen(false);
+  // };
+
+  const toggleDrawer = (open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+
+    setIsOpen(open);
   };
 
   // -------end-of-template------
-  
+  const { pathname } = useLocation();
   const history = useHistory();
   const handleLogout = () => {
     localStorage.clear();
     history.replace('/');
   };
+
 
   const user = JSON.parse(localStorage.getItem('user'));
   let [stopRedirect, setStopRedirect] = React.useState(false);
@@ -163,17 +172,17 @@ export default function Dashboard() {
       <CssBaseline />
       <AppBar
         position="absolute"
-        className={clsx(classes.appBar, open && classes.appBarShift)}
+        className={clsx(classes.appBar, isOpen && classes.appBarShift)}
       >
         <Toolbar className={classes.toolbar}>
           <IconButton
             edge="start"
             color="inherit"
             aria-label="open drawer"
-            onClick={handleDrawerOpen}
+            onClick={toggleDrawer(true)}
             className={clsx(
               classes.menuButton,
-              open && classes.menuButtonHidden,
+              isOpen && classes.menuButtonHidden,
             )}
           >
             <MenuIcon />
@@ -185,7 +194,11 @@ export default function Dashboard() {
             noWrap
             className={classes.title}
           >
-            Dashboard
+            {
+              pathname === '/personal/requests' ? 'Requests'
+              : pathname === '/personal/new' ? 'New Request'
+              : 'Dashboard'
+            }
           </Typography>
           <IconButton color="inherit" onClick={handleLogout}>
             <LogoutIcon />
@@ -196,14 +209,15 @@ export default function Dashboard() {
       {/* Sidebar Nav */}
 
       <Drawer
-        variant="permanent"
+        variant="temporary"
         classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+          paper: clsx(classes.drawerPaper, !isOpen && classes.drawerPaperClose),
         }}
-        open={open}
+        open={isOpen}
+        onClick={toggleDrawer(false)}
       >
         <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton onClick={toggleDrawer(false)}>
             <ChevronLeftIcon />
           </IconButton>
         </div>
@@ -240,7 +254,7 @@ export default function Dashboard() {
       </main>
 
       {/* Main Content */}
-      
+
     </div>
   );
 }

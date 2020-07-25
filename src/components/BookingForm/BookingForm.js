@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function BookingForm({service, date, handleDateChange, address, handleAddressChange, handleSubmit}) {
+export default function BookingForm({ service, date, handleDateChange, address, handleAddressChange, handleSubmit, error, setError}) {
    const classes = useStyles();
    // const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
@@ -120,6 +120,8 @@ export default function BookingForm({service, date, handleDateChange, address, h
                      value={address}
                      onChange={(e) => handleAddressChange(e.target.value)}
                      variant="outlined"
+                     error={error.address}
+                     onFocus={() => setError({...error, address: false})}
                   />
                </Grid>
                <Grid item sm={12} md={10} lg={8}>
